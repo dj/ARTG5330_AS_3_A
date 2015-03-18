@@ -44,29 +44,40 @@ function top5(rows, year) {
 function draw(rows, year){
   var topTeams = canvas.selectAll('.team')
     .data(rows, function(d){ return d.country; })
-    .enter()
-    .append('g')
+
+  var teamsEnter = topTeams.enter().append('g'),
+      teamsUpdate = topTeams,
+      teamsExit = topTeams.exit().remove()
+
+  teamsEnter
     .attr('class', 'team')
     .attr('transform',function(d,i){
       //i ranges from 0 to 4
       return 'translate(' + i*(width/4) + ',' + height/2 + ')';
-    });
-  topTeams
+    })
     .append('circle')
     .attr('r', function(d){
       return scaleR(d[year]);
     })
-  topTeams
-    .append('text')
-    .attr('class','team-name')
-    .text(function(d){ return d.country; })
-    .attr('y', function(d){ return scaleR(d[year]+20)})
-    .attr('text-anchor','middle');
-    topTeams
+
+  teamsEnter
     .append('text')
     .attr('class','medal-count')
     .text(function(d){ return d[year];})
     .attr('text-anchor','middle');
+
+  teamsEnter
+    .append('text')
+    .attr('class','team-name')
+    .text(function(d){ return d.country; })
+    .attr('y', function(d){ return scaleR(d[year]+20)})
+    .attr('text-anchor','middle')
+
+  teamsUpdate
+    .attr('transform',function(d,i){
+      //i ranges from 0 to 4
+      return 'translate(' + i*(width/4) + ',' + height/2 + ')';
+    })
 }
 
 function parse(row){
