@@ -16,9 +16,9 @@ var scaleR = d3.scale.sqrt().domain([5,100]).range([5,120]);
 d3.csv('data/olympic_medal_count.csv', parse, dataLoaded);
 
 function dataLoaded(err,rows){
-  var top1900 = top5(rows, 1900);
+  var teams = top5(rows, 2012);
 
-  draw(top1900, 1900);
+  draw(teams, 2012);
 
   //TODO: fill out this function
   $('.btn-group .year').on('click',function(e){
@@ -47,22 +47,23 @@ function draw(rows, year){
 
   var teamsEnter = topTeams.enter().append('g'),
       teamsUpdate = topTeams,
-      teamsExit = topTeams.exit().remove()
+      teamsExit = topTeams.exit()
 
   teamsEnter
-    .attr('class', 'team')
     .attr('transform',function(d,i){
       //i ranges from 0 to 4
-      return 'translate(' + i*(width/4) + ',' + height/2 + ')';
+      return 'translate(' + i*(width/4) + ',0)';
     })
+    .attr('class', 'team')
     .append('circle')
     .attr('r', function(d){
       return scaleR(d[year]);
     })
-
   teamsEnter
     .append('text')
     .attr('class','medal-count')
+
+  teamsUpdate.selectAll('.medal-count')
     .text(function(d){ return d[year];})
     .attr('text-anchor','middle');
 
@@ -74,10 +75,24 @@ function draw(rows, year){
     .attr('text-anchor','middle')
 
   teamsUpdate
+    .transition().duration(2000)
     .attr('transform',function(d,i){
       //i ranges from 0 to 4
       return 'translate(' + i*(width/4) + ',' + height/2 + ')';
     })
+  teamsUpdate.selectAll('circle')
+    .transition().duration(2000)
+    .attr('r', function(d){
+      return scaleR(d[year]);
+    })
+
+  teamsExit
+    .transition().duration(2000)
+    .attr('transform',function(d,i){
+      //i ranges from 0 to 4
+      return 'translate(' + i*(width/4) + ',' + height + ')';
+    })
+    .remove()
 }
 
 function parse(row){
